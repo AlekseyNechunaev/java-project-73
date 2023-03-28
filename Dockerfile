@@ -1,6 +1,6 @@
 FROM gradle:7.4.0-jdk17
 
-COPY /app .
+COPY . /app
 
 RUN gradle installDist
 
