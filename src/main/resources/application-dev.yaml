@@ -1,0 +1,9 @@
+#spring:
+#  datasource:
+#    driver-class-name:
+#    username: 123
+#    password: 123
+#    url: 132
+#    hikari:
+#      maximum-pool-size: 30
+
