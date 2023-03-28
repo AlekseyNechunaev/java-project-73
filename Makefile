@@ -37,4 +37,4 @@ generate-migrations:
 db-migrate:
 	./gradlew update
 
-.PHONY: buil
+.PHONY: build
