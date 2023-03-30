@@ -1,0 +1,9 @@
+spring:
+  profiles:
+    active: ${PROFILE}
+
+  application:
+    name: "hexletBlog"
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/changelog-master.xml

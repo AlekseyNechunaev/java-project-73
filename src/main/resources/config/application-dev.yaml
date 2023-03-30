@@ -1,9 +1,17 @@
-#spring:
-#  datasource:
-#    driver-class-name:
-#    username: 123
-#    password: 123
-#    url: 132
-#    hikari:
-#      maximum-pool-size: 30
-
+spring:
+  datasource:
+    url: jdbc:h2:./blog
+    username: user
+    password: password
+    driverClassName: org.h2.Driver
+    hikari:
+      maximum-pool-size: 30
+  jpa:
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2
+logging:
+  level:
+    root: debug

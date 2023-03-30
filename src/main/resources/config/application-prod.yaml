@@ -1,9 +1,10 @@
-#spring:
-#  datasource:
-#    driver-class-name:
-#    username: 123
-#    password: 123
-#    url: 132
-#    hikari:
-#      maximum-pool-size: 30
-
+spring:
+  datasource:
+    username: ${JDBC_DATABASE_USER}
+    password: ${JDBC_DATABASE_PASSWORD}
+    url: ${JDBC_DATABASE_URL}
+    hikari:
+      maximum-pool-size: 30
+logging:
+  level:
+    root: info
