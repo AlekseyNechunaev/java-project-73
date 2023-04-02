@@ -16,31 +16,38 @@ group = 'hexlet.code'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    annotationProcessor(
+            'org.mapstruct:mapstruct-processor:1.5.3.Final',
+            'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final',
+    )
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-//    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'org.postgresql:postgresql'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+    implementation 'org.liquibase:liquibase-core:4.6.1'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'com.github.javafaker:javafaker:1.0.2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 //    testImplementation 'org.springframework.security:spring-security-test'
-    liquibaseRuntime('org.springframework.boot:spring-boot-starter-data-jpa')
-    liquibaseRuntime('org.liquibase:liquibase-core')
-    liquibaseRuntime('org.liquibase.ext:liquibase-hibernate5:4.18.0')
-    liquibaseRuntime 'com.h2database:h2'
-    liquibaseRuntime 'org.postgresql:postgresql'
+    liquibaseRuntime(
+            sourceSets.main.output,
+            'org.liquibase:liquibase-core:4.6.1',
+            'org.liquibase.ext:liquibase-hibernate5:4.5.0',
+            'org.springframework.boot:spring-boot-starter-data-jpa'
+    )
+
+    runtimeOnly(
+            'com.h2database:h2:1.4.200',
+            'org.postgresql:postgresql:42.2.24'
+    )
 }
 
 task stage(dependsOn: ['clean', 'installDist'])
@@ -66,7 +73,7 @@ liquibase {
     activities {
         main {
             // Указываем путь, по которому будет сгенерирован файл миграции
-            changeLogFile 'src/main/resources/db/changelog/changelog-master.xml'
+            changeLogFile 'src/main/resources/db/changelog/changelog-master.yaml'
             // Указывем источник, с которым будут сравниваться изменения
             // Это база данных, изначально она пустая
             url 'jdbc:h2:./blog'

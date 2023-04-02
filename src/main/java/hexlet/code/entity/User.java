@@ -1,13 +1,14 @@
 package hexlet.code.entity;
 
-import org.springframework.data.annotation.CreatedDate;
-
+import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import java.time.LocalDate;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import java.util.Date;
 
 @Entity
 @Table(name = User.USERS)
@@ -21,8 +22,9 @@ public class User {
     private String lastName;
     private String email;
     private String password;
-    @CreatedDate
-    private LocalDate createdAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    private Date createdAt;
 
     public Long getId() {
         return id;
@@ -64,11 +66,11 @@ public class User {
         this.password = password;
     }
 
-    public LocalDate getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 }

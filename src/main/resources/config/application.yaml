@@ -6,4 +6,5 @@ spring:
     name: "hexletBlog"
   liquibase:
     enabled: true
-    change-log: classpath:db/changelog/changelog-master.xml
+    change-log: classpath:db/changelog/changelog-master.yaml
+base-api-url: /api
