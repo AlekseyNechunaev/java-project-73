@@ -4,6 +4,7 @@ import hexlet.code.dto.CreateUserDto;
 import hexlet.code.dto.GetUserDto;
 import hexlet.code.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,11 +45,13 @@ public class UserController {
         return userService.create(dto);
     }
 
+    @PreAuthorize("@userAuthenticationHelper.canAccess(#id)")
     @PutMapping(path = ID)
     public GetUserDto update(@PathVariable Long id, @Valid @RequestBody CreateUserDto dto) {
         return userService.update(id, dto);
     }
 
+    @PreAuthorize("@userAuthenticationHelper.canAccess(#id)")
     @DeleteMapping(path = ID)
     public void delete(@PathVariable Long id) {
         userService.delete(id);

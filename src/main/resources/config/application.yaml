@@ -8,3 +8,7 @@ spring:
     enabled: true
     change-log: classpath:db/changelog/changelog-master.yaml
 base-api-url: /api
+jwt:
+  issuer: hexlet-blog
+  expireSeconds: 1800
+  secretKey: "8A7M51Xb29RCloonIlI3BXUHGILuguTO"

@@ -1,10 +1,12 @@
 package hexlet.code.controller;
 
+import hexlet.code.dto.AuthDto;
 import hexlet.code.dto.CreateUserDto;
 import hexlet.code.dto.GetUserDto;
 import hexlet.code.dto.ValidationErrorDto;
 import hexlet.code.entity.User;
 import hexlet.code.repository.UserRepository;
+import hexlet.code.security.JwtTokenFilter;
 import hexlet.code.utils.TestUtils;
 import hexlet.code.utils.random.Random;
 import org.assertj.core.api.Assertions;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -95,20 +98,37 @@ public class UsersTest {
     }
 
     @Test
-    void userGetByIdNotFoundTest() {
-        long notFoundId = 1L;
+    void userGetByIdNotFoundTest() throws UnsupportedEncodingException {
+        CreateUserDto registerRequest = random.randomCreateUserData();
+        GetUserDto registerResponse = testUtils.defaultRegisterUser(registerRequest);
+        AuthDto authRequest = new AuthDto(registerRequest.getEmail(), registerRequest.getPassword());
+        String token = testUtils.performAuthenticate(authRequest);
+        Assertions.assertThat(userRepository.findById(registerResponse.getId())).isPresent();
+        long notFoundId = registerResponse.getId() + 1;
         MockHttpServletResponse notFoundResponse = testUtils.perform(MockMvcRequestBuilders
-                .get(baseApiPath + UserController.USER_PATH + notFoundId));
+                .get(baseApiPath + UserController.USER_PATH + notFoundId)
+                .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token));
         Assertions.assertThat(notFoundResponse.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    void userGetByIdUserForbiddenErrorNotAuthorizedUserTest() {
+        long searchId = 1;
+        MockHttpServletResponse notFoundResponse = testUtils.perform(MockMvcRequestBuilders
+                .get(baseApiPath + UserController.USER_PATH + searchId));
+        Assertions.assertThat(notFoundResponse.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
     void userSuccessGetByIdTest() throws UnsupportedEncodingException {
         CreateUserDto registerRequest = random.randomCreateUserData();
         GetUserDto registerResponse = testUtils.defaultRegisterUser(registerRequest);
+        AuthDto authRequest = new AuthDto(registerRequest.getEmail(), registerRequest.getPassword());
+        String token = testUtils.performAuthenticate(authRequest);
         Assertions.assertThat(userRepository.findById(registerResponse.getId())).isPresent();
         MockHttpServletResponse response = testUtils.perform(MockMvcRequestBuilders
-                .get(baseApiPath + UserController.USER_PATH + "/" + registerResponse.getId()));
+                .get(baseApiPath + UserController.USER_PATH + "/" + registerResponse.getId())
+                .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token));
         Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         GetUserDto getByIdResponse = testUtils.fromJson(response.getContentAsString(), GetUserDto.class);
         Assertions.assertThat(getByIdResponse.getEmail()).isEqualTo(registerResponse.getEmail());
@@ -138,29 +158,38 @@ public class UsersTest {
     }
 
     @Test
-    void updateUserWithErrorExistUserByEmailTest() {
+    void updateUserWithErrorExistUserByEmailTest() throws UnsupportedEncodingException {
         CreateUserDto firstRegisterRequest = random.randomCreateUserData();
         GetUserDto firstRegisterResponse = testUtils.defaultRegisterUser(firstRegisterRequest);
         CreateUserDto secondRegisterRequest = random.randomCreateUserData();
         GetUserDto secondRegisterResponse = testUtils.defaultRegisterUser(secondRegisterRequest);
         Assertions.assertThat(userRepository.findById(firstRegisterResponse.getId())).isPresent();
         Assertions.assertThat(userRepository.findById(secondRegisterResponse.getId())).isPresent();
+        AuthDto authRequest = new AuthDto(firstRegisterRequest.getEmail(), firstRegisterRequest.getPassword());
+        String token = testUtils.performAuthenticate(authRequest);
         CreateUserDto failedUpdateRequest = random.randomCreateUserData();
         failedUpdateRequest.setEmail(secondRegisterResponse.getEmail());
         MockHttpServletResponse response = testUtils.perform(MockMvcRequestBuilders
-                .put(baseApiPath + UserController.USER_PATH + "/" + firstRegisterResponse.getId()));
+                .put(baseApiPath + UserController.USER_PATH + "/" + firstRegisterResponse.getId())
+                .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token));
         Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
-    void updateUserNotFoundByIdTest() {
+    void updateUserErrorIdFromRequestNotEqualsUserIdFromTokenTest() throws UnsupportedEncodingException {
+        CreateUserDto registerRequest = random.randomCreateUserData();
+        GetUserDto registerResponse = testUtils.defaultRegisterUser(registerRequest);
+        Assertions.assertThat(userRepository.findById(registerResponse.getId())).isPresent();
+        AuthDto authRequest = new AuthDto(registerRequest.getEmail(), registerRequest.getPassword());
+        String token = testUtils.performAuthenticate(authRequest);
         CreateUserDto updateRequest = random.randomCreateUserData();
-        long notFoundId = 1L;
+        long otherId = registerResponse.getId() + 1;
         MockHttpServletResponse notFoundResponse = testUtils.perform(MockMvcRequestBuilders
-                .put(baseApiPath + UserController.USER_PATH + notFoundId)
+                .put(baseApiPath + UserController.USER_PATH + "/" + otherId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(testUtils.toJson(updateRequest)));
-        Assertions.assertThat(notFoundResponse.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+                .content(testUtils.toJson(updateRequest))
+                .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token));
+        Assertions.assertThat(notFoundResponse.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
@@ -168,9 +197,12 @@ public class UsersTest {
         CreateUserDto registerRequest = random.randomCreateUserData();
         GetUserDto registerResponse = testUtils.defaultRegisterUser(registerRequest);
         Assertions.assertThat(userRepository.findById(registerResponse.getId())).isPresent();
+        AuthDto authRequest = new AuthDto(registerRequest.getEmail(), registerRequest.getPassword());
+        String token = testUtils.performAuthenticate(authRequest);
         CreateUserDto updateRequest = random.randomCreateUserData();
         MockHttpServletResponse response = testUtils.perform(MockMvcRequestBuilders
                 .put(baseApiPath + UserController.USER_PATH + "/" + registerResponse.getId())
+                .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testUtils.toJson(updateRequest)));
         Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
@@ -181,21 +213,49 @@ public class UsersTest {
     }
 
     @Test
-    void deleteUserNotFoundTest() {
-        long notFoundId = 1L;
-        MockHttpServletResponse notFoundResponse = testUtils.perform(MockMvcRequestBuilders
-                .delete(baseApiPath + UserController.USER_PATH + "/" + notFoundId)
-        );
-        Assertions.assertThat(notFoundResponse.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    void updateUserForbiddenErrorNotAuthorizedUserTest() {
+        CreateUserDto updateRequest = random.randomCreateUserData();
+        long updateId = 1;
+        MockHttpServletResponse response = testUtils.perform(MockMvcRequestBuilders
+                .put(baseApiPath + UserController.USER_PATH + "/" + updateId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(testUtils.toJson(updateRequest)));
+        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
-    void successDeleteUserTest() {
+    void deleteUserErrorIdFromRequestNotEqualsUserIdFromTokenTest() throws UnsupportedEncodingException {
         CreateUserDto registerRequest = random.randomCreateUserData();
         GetUserDto registerResponse = testUtils.defaultRegisterUser(registerRequest);
         Assertions.assertThat(userRepository.findById(registerResponse.getId())).isPresent();
+        AuthDto authRequest = new AuthDto(registerRequest.getEmail(), registerRequest.getPassword());
+        String token = testUtils.performAuthenticate(authRequest);
+        long otherId = registerResponse.getId() + 1;
+        MockHttpServletResponse notFoundResponse = testUtils.perform(MockMvcRequestBuilders
+                .delete(baseApiPath + UserController.USER_PATH + "/" + otherId)
+                .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token)
+        );
+        Assertions.assertThat(notFoundResponse.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
+    void deleteUserForbiddenErrorNotAuthorizedUserTest() {
+        long deleteId = 1;
+        MockHttpServletResponse response = testUtils.perform(MockMvcRequestBuilders
+                .delete(baseApiPath + UserController.USER_PATH + "/" + deleteId));
+        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
+    void successDeleteUserTest() throws UnsupportedEncodingException {
+        CreateUserDto registerRequest = random.randomCreateUserData();
+        GetUserDto registerResponse = testUtils.defaultRegisterUser(registerRequest);
+        Assertions.assertThat(userRepository.findById(registerResponse.getId())).isPresent();
+        AuthDto authRequest = new AuthDto(registerRequest.getEmail(), registerRequest.getPassword());
+        String token = testUtils.performAuthenticate(authRequest);
         MockHttpServletResponse notFoundResponse = testUtils.perform(MockMvcRequestBuilders
                 .delete(baseApiPath + UserController.USER_PATH + "/" + registerResponse.getId())
+                .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token)
         );
         Assertions.assertThat(notFoundResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
         Assertions.assertThat(userRepository.findById(registerResponse.getId())).isNotPresent();
