@@ -3,12 +3,20 @@ package hexlet.code.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.controller.AuthController;
+import hexlet.code.controller.TaskStatusController;
 import hexlet.code.controller.UserController;
-import hexlet.code.dto.AuthDto;
-import hexlet.code.dto.CreateUserDto;
+import hexlet.code.dto.CreateStatusDto;
+import hexlet.code.dto.GetStatusDto;
 import hexlet.code.dto.GetUserDto;
+import hexlet.code.dto.CreateUserDto;
+import hexlet.code.dto.AuthDto;
+import hexlet.code.repository.TaskStatusRepository;
+import hexlet.code.repository.UserRepository;
+import hexlet.code.security.JwtTokenFilter;
 import org.assertj.core.api.Assertions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -24,13 +32,21 @@ public class TestUtils {
 
     private final ObjectMapper objectMapper;
     private final MockMvc mockMvc;
+    private final UserRepository userRepository;
+    private final TaskStatusRepository taskStatusRepository;
 
     @Value("${base-api-url}")
     private String baseApiPath;
 
-    public TestUtils(ObjectMapper objectMapper, MockMvc mockMvc) {
+    @Autowired
+    public TestUtils(ObjectMapper objectMapper,
+                     MockMvc mockMvc,
+                     UserRepository userRepository,
+                     TaskStatusRepository taskStatusRepository) {
         this.objectMapper = objectMapper;
         this.mockMvc = mockMvc;
+        this.userRepository = userRepository;
+        this.taskStatusRepository = taskStatusRepository;
     }
 
     public MockHttpServletResponse perform(MockHttpServletRequestBuilder requestBuilder) {
@@ -52,6 +68,20 @@ public class TestUtils {
         Assertions.assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON.toString());
         try {
             return fromJson(response.getContentAsString(), GetUserDto.class);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public GetStatusDto defaultAddStatus(CreateStatusDto dto, String token) {
+        MockHttpServletResponse response = perform(MockMvcRequestBuilders
+                .post(baseApiPath + TaskStatusController.TASK_STATUS_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token)
+                .content(toJson(dto)));
+        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        try {
+            return fromJson(response.getContentAsString(), GetStatusDto.class);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -82,5 +112,10 @@ public class TestUtils {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void clearAllRepository() {
+        taskStatusRepository.deleteAll();
+        userRepository.deleteAll();
     }
 }

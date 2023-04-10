@@ -6,7 +6,7 @@ import hexlet.code.dto.GetUserDto;
 import hexlet.code.entity.User;
 import hexlet.code.exception.ExceptionMessage;
 import hexlet.code.exception.ResourceNotFoundException;
-import hexlet.code.exception.UserExistException;
+import hexlet.code.exception.ResourceExistException;
 import hexlet.code.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public GetUserDto create(CreateUserDto dto) {
         if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new UserExistException(ExceptionMessage.USER_EXIST_BY_EMAIL);
+            throw new ResourceExistException(ExceptionMessage.USER_EXIST_BY_EMAIL);
         }
         String encodePassword = encoder.encode(dto.getPassword());
         User user = mapper.map(dto);
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.USER_NOT_FOUND));
         if (userRepository.existsByEmailAndIdIsNot(dto.getEmail(), id)) {
-            throw new UserExistException(ExceptionMessage.USER_EXIST_BY_EMAIL);
+            throw new ResourceExistException(ExceptionMessage.USER_EXIST_BY_EMAIL);
         }
         User updatedUser = mapper.map(dto);
         String encodePassword = encoder.encode(dto.getPassword());

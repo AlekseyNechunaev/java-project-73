@@ -29,4 +29,25 @@ databaseChangeLog:
             name: password
             type: VARCHAR(255)
         tableName: users
+- changeSet:
+    id: 1680862186778-1
+    author: alekseynechunaev (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: statusesPK
+            name: id
+            type: BIGINT
+        - column:
+            name: created_at
+            type: TIMESTAMP
+        - column:
+            name: name
+            type: VARCHAR(255)
+        tableName: statuses
 

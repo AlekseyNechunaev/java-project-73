@@ -1,5 +1,6 @@
 package hexlet.code.security;
 
+import hexlet.code.entity.User;
 import hexlet.code.exception.ExceptionMessage;
 import hexlet.code.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username)
+        User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException(ExceptionMessage.USER_NOT_FOUND));
+        return new CustomUserDetails(user);
     }
 }

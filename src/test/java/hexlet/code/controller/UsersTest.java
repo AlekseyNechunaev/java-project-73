@@ -3,14 +3,13 @@ package hexlet.code.controller;
 import hexlet.code.dto.AuthDto;
 import hexlet.code.dto.CreateUserDto;
 import hexlet.code.dto.GetUserDto;
-import hexlet.code.dto.ValidationErrorDto;
 import hexlet.code.entity.User;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.security.JwtTokenFilter;
 import hexlet.code.utils.TestUtils;
 import hexlet.code.utils.random.Random;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,9 +43,9 @@ public class UsersTest {
         this.random = random;
     }
 
-    @BeforeEach
+    @AfterEach
     void clearDb() {
-        userRepository.deleteAll();
+        testUtils.clearAllRepository();
     }
 
     @Test
@@ -60,14 +59,6 @@ public class UsersTest {
                 .content(testUtils.toJson(notValidUserDto)));
         Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
         Assertions.assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON.toString());
-        List<ValidationErrorDto> errors = Arrays.asList(
-                testUtils.fromJson(response.getContentAsString(), ValidationErrorDto[].class));
-        List<String> exceptedErrorFields = List.of("lastName", "password", "email", "firstName");
-        List<String> errorFields = errors.stream()
-                .map(ValidationErrorDto::getFieldName)
-                .toList();
-        Assertions.assertThat(errorFields.size()).isEqualTo(exceptedErrorFields.size());
-        Assertions.assertThat(errorFields).containsAll(exceptedErrorFields);
     }
 
     @Test

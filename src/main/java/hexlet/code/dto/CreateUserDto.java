@@ -10,11 +10,9 @@ public class CreateUserDto {
     private String email;
 
     @NotBlank
-    @Size(min = 1)
     private String firstName;
 
     @NotBlank
-    @Size(min = 1)
     private String lastName;
 
     @NotBlank
