@@ -38,8 +38,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public GetUserDto findById(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.USER_NOT_FOUND));
+        User user = userRepository.getById(id);
         return mapper.map(user);
     }
 
@@ -57,8 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public GetUserDto update(Long id, CreateUserDto dto) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.USER_NOT_FOUND));
+        User user = userRepository.getById(id);
         if (userRepository.existsByEmailAndIdIsNot(dto.getEmail(), id)) {
             throw new ResourceExistException(ExceptionMessage.USER_EXIST_BY_EMAIL);
         }

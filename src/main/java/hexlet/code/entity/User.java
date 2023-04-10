@@ -1,14 +1,10 @@
 package hexlet.code.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+
+import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = User.USERS)
@@ -25,6 +21,12 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Date createdAt;
+
+    @OneToMany(mappedBy = "author")
+    private List<Task> authorTasks;
+
+    @OneToMany(mappedBy = "executor")
+    private List<Task> executorTasks;
 
     public Long getId() {
         return id;
@@ -72,5 +74,21 @@ public class User {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<Task> getAuthorTasks() {
+        return authorTasks;
+    }
+
+    public void setAuthorTasks(List<Task> authorTasks) {
+        this.authorTasks = authorTasks;
+    }
+
+    public List<Task> getExecutorTasks() {
+        return executorTasks;
+    }
+
+    public void setExecutorTasks(List<Task> executorTasks) {
+        this.executorTasks = executorTasks;
     }
 }
