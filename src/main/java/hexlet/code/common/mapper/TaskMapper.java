@@ -7,7 +7,7 @@ import hexlet.code.entity.Task;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {UserMapper.class, TaskStatusMapper.class})
 public interface TaskMapper {
 
     @Mapping(target = "id", ignore = true)
@@ -24,8 +24,5 @@ public interface TaskMapper {
     @Mapping(target = "createdAt", ignore = true)
     Task map(UpdateTaskDto dto);
 
-    @Mapping(target = "taskStatus", ignore = true)
-    @Mapping(target = "author", ignore = true)
-    @Mapping(target = "executor", ignore = true)
     GetTaskDto map(Task task);
 }

@@ -6,8 +6,10 @@ import hexlet.code.dto.CreateStatusDto;
 import hexlet.code.dto.GetStatusDto;
 import hexlet.code.entity.TaskStatus;
 import hexlet.code.exception.ExceptionMessage;
+import hexlet.code.exception.IllegalOperationException;
 import hexlet.code.exception.ResourceExistException;
 import hexlet.code.exception.ResourceNotFoundException;
+import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,11 +21,15 @@ import java.util.stream.Collectors;
 public class TaskStatusServiceImpl implements TaskStatusService {
 
     private final TaskStatusRepository taskStatusRepository;
+    private final TaskRepository taskRepository;
     private final TaskStatusMapper mapper;
 
     @Autowired
-    public TaskStatusServiceImpl(TaskStatusRepository taskStatusRepository, TaskStatusMapper mapper) {
+    public TaskStatusServiceImpl(TaskStatusRepository taskStatusRepository,
+                                 TaskRepository taskRepository,
+                                 TaskStatusMapper mapper) {
         this.taskStatusRepository = taskStatusRepository;
+        this.taskRepository = taskRepository;
         this.mapper = mapper;
     }
 
@@ -36,9 +42,9 @@ public class TaskStatusServiceImpl implements TaskStatusService {
 
     @Override
     public GetStatusDto findById(Long id) {
-        TaskStatus status = taskStatusRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.STATUS_NOT_FOUND));
-        return mapper.map(status);
+        return taskStatusRepository.findById(id)
+                .map(mapper::map)
+                .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.RESOURCE_NOT_FOUND));
     }
 
     @Override
@@ -58,7 +64,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
         String trimmedName = Utils.trimmedText(dto.getName());
         dto.setName(trimmedName);
         TaskStatus status = taskStatusRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.STATUS_NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.RESOURCE_NOT_FOUND));
         if (taskStatusRepository.existsByNameIgnoreCaseAndIdIsNot(dto.getName(), id)) {
             throw new ResourceExistException(ExceptionMessage.STATUS_EXIST_BY_NAME);
         }
@@ -70,7 +76,10 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     @Override
     public void delete(Long id) {
         TaskStatus status = taskStatusRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.STATUS_NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.RESOURCE_NOT_FOUND));
+        if (!taskRepository.findAllByTaskStatusId(id).isEmpty()) {
+            throw new IllegalOperationException(ExceptionMessage.ILLEGAL_DELETE_STATUS);
+        }
         taskStatusRepository.delete(status);
     }
 

@@ -45,13 +45,13 @@ public class UserController {
         return userService.create(dto);
     }
 
-    @PreAuthorize("@userAuthenticationHelper.canAccess(#id)")
+    @PreAuthorize("@authorizationHelper.canAccessUser(#id)")
     @PutMapping(path = ID)
     public GetUserDto update(@PathVariable Long id, @Valid @RequestBody CreateUserDto dto) {
         return userService.update(id, dto);
     }
 
-    @PreAuthorize("@userAuthenticationHelper.canAccess(#id)")
+    @PreAuthorize("@authorizationHelper.canAccessUser(#id)")
     @DeleteMapping(path = ID)
     public void delete(@PathVariable Long id) {
         userService.delete(id);

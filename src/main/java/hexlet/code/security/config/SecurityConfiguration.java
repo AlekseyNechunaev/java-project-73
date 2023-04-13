@@ -1,6 +1,7 @@
 package hexlet.code.security.config;
 
 import hexlet.code.controller.AuthController;
+import hexlet.code.controller.TaskController;
 import hexlet.code.controller.TaskStatusController;
 import hexlet.code.controller.UserController;
 import hexlet.code.controller.WelcomeController;
@@ -24,6 +25,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    private static final String ANY_MATCHER = "/**";
     private final UserDetailsService userDetailsService;
     private final JwtTokenFilter jwtTokenFilter;
 
@@ -47,7 +50,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, baseApiUrl + UserController.USER_PATH).permitAll()
                 .antMatchers(HttpMethod.POST, baseApiUrl + AuthController.AUTH_PATH).permitAll()
                 .antMatchers(HttpMethod.GET, baseApiUrl + TaskStatusController.TASK_STATUS_PATH).permitAll()
-                .antMatchers(baseApiUrl + "/**").authenticated()
+                .antMatchers(HttpMethod.GET, baseApiUrl + TaskController.TASK_PATH).permitAll()
+                .antMatchers(baseApiUrl + ANY_MATCHER).authenticated()
                 .antMatchers(WelcomeController.WELCOME_PATH).permitAll()
                 .anyRequest()
                 .permitAll();

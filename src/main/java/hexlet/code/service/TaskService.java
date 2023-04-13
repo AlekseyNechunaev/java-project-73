@@ -10,7 +10,7 @@ public interface TaskService {
 
     List<GetTaskDto> findAll();
 
-    GetTaskDto findById();
+    GetTaskDto findById(Long id);
 
     GetTaskDto create(CreateTaskDto dto);
 

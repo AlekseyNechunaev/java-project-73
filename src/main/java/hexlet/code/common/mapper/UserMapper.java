@@ -11,6 +11,8 @@ public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "authorTasks", ignore = true)
+    @Mapping(target = "executorTasks", ignore = true)
     User map(CreateUserDto dto);
 
     GetUserDto map(User user);

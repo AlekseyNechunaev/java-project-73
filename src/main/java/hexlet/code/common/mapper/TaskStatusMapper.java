@@ -11,6 +11,7 @@ public interface TaskStatusMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "tasks", ignore = true)
     TaskStatus map(CreateStatusDto dto);
 
     GetStatusDto map(TaskStatus taskStatus);

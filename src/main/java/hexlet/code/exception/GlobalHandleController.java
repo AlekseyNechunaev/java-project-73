@@ -19,9 +19,13 @@ public class GlobalHandleController {
         return new ErrorDto(HttpStatus.NOT_FOUND.value(), e.getMessage());
     }
 
-    @ExceptionHandler(ResourceExistException.class)
+    @ExceptionHandler(value = {
+            ResourceExistException.class,
+            ResourceNotExistException.class,
+            IllegalOperationException.class
+    })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDto resourceExistException(ResourceExistException e) {
+    public ErrorDto badRequestException(Exception e) {
         return new ErrorDto(HttpStatus.BAD_REQUEST.value(), e.getMessage());
     }
 
