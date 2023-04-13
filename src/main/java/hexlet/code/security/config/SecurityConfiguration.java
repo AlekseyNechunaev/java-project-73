@@ -1,8 +1,6 @@
 package hexlet.code.security.config;
 
 import hexlet.code.controller.AuthController;
-import hexlet.code.controller.TaskController;
-import hexlet.code.controller.TaskStatusController;
 import hexlet.code.controller.UserController;
 import hexlet.code.controller.WelcomeController;
 import hexlet.code.security.JwtTokenFilter;
@@ -49,8 +47,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, baseApiUrl + UserController.USER_PATH).permitAll()
                 .antMatchers(HttpMethod.GET, baseApiUrl + UserController.USER_PATH).permitAll()
                 .antMatchers(HttpMethod.POST, baseApiUrl + AuthController.AUTH_PATH).permitAll()
-                .antMatchers(HttpMethod.GET, baseApiUrl + TaskStatusController.TASK_STATUS_PATH).permitAll()
-                .antMatchers(HttpMethod.GET, baseApiUrl + TaskController.TASK_PATH).permitAll()
                 .antMatchers(baseApiUrl + ANY_MATCHER).authenticated()
                 .antMatchers(WelcomeController.WELCOME_PATH).permitAll()
                 .anyRequest()

@@ -16,6 +16,18 @@ public class CreateTaskDto {
     @NotNull
     private Long taskStatusId;
 
+    public CreateTaskDto(String name, String description, Long authorId, Long executorId, Long taskStatusId) {
+        this.name = name;
+        this.description = description;
+        this.authorId = authorId;
+        this.executorId = executorId;
+        this.taskStatusId = taskStatusId;
+    }
+
+    public CreateTaskDto() {
+
+    }
+
     public String getName() {
         return name;
     }

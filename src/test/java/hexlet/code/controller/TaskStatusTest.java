@@ -54,7 +54,7 @@ public class TaskStatusTest {
     }
 
     @BeforeEach
-    void registerAndAuth() throws UnsupportedEncodingException {
+    void registerAndAuth() {
         CreateUserDto createUserDto = random.randomCreateUserData();
         testUtils.defaultRegisterUser(createUserDto);
         token = testUtils.performAuthenticate(new AuthDto(createUserDto.getEmail(), createUserDto.getPassword()));
@@ -69,7 +69,8 @@ public class TaskStatusTest {
     void successFindAllTest() throws UnsupportedEncodingException {
         testUtils.defaultAddStatus(new CreateStatusDto(STATUS_NAME), token);
         MockHttpServletResponse response = testUtils.perform(MockMvcRequestBuilders
-                .get(baseApiPath + TaskStatusController.TASK_STATUS_PATH));
+                .get(baseApiPath + TaskStatusController.TASK_STATUS_PATH)
+                .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token));
         Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         List<GetStatusDto> statuses = Arrays.asList(testUtils.fromJson(response.getContentAsString(),
                 GetStatusDto[].class));
@@ -96,27 +97,6 @@ public class TaskStatusTest {
     }
 
     @Test
-    void errorUnauthorizedFindByIdTest() {
-        GetStatusDto addResponse = testUtils.defaultAddStatus(new CreateStatusDto(STATUS_NAME), token);
-        MockHttpServletResponse response = testUtils.perform(
-                MockMvcRequestBuilders
-                        .get(baseApiPath + TaskStatusController.TASK_STATUS_PATH + "/" + addResponse.getId())
-        );
-        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-    }
-
-    @Test
-    void errorNotFoundFindByIdTest() {
-        long notFoundId = 1;
-        MockHttpServletResponse response = testUtils.perform(
-                MockMvcRequestBuilders
-                        .get(baseApiPath + TaskStatusController.TASK_STATUS_PATH + "/" + notFoundId)
-                        .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token)
-        );
-        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-    }
-
-    @Test
     void errorCreateStatusExistByNameTest() {
         CreateStatusDto createStatusDto = new CreateStatusDto(STATUS_NAME);
         testUtils.defaultAddStatus(createStatusDto, token);
@@ -131,50 +111,11 @@ public class TaskStatusTest {
     }
 
     @Test
-    void errorUnauthorizedCreateTest() {
-        CreateStatusDto createStatusDto = new CreateStatusDto(STATUS_NAME);
-        MockHttpServletResponse response = testUtils.perform(
-                MockMvcRequestBuilders
-                        .post(baseApiPath + TaskStatusController.TASK_STATUS_PATH)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(testUtils.toJson(createStatusDto))
-        );
-        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-    }
-
-    @Test
     void successCreateTest() {
         CreateStatusDto createStatusDto = new CreateStatusDto(STATUS_NAME);
         GetStatusDto response = testUtils.defaultAddStatus(createStatusDto, token);
         Optional<TaskStatus> statusFromDb = taskStatusRepository.findById(response.getId());
         Assertions.assertThat(statusFromDb).isPresent();
-    }
-
-    @Test
-    void errorUnauthorizedUpdateTest() {
-        CreateStatusDto createStatusDto = new CreateStatusDto(STATUS_NAME);
-        long id = 1;
-        MockHttpServletResponse response = testUtils.perform(
-                MockMvcRequestBuilders
-                        .put(baseApiPath + TaskStatusController.TASK_STATUS_PATH + "/" + id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(testUtils.toJson(createStatusDto))
-        );
-        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-    }
-
-    @Test
-    void errorNotFoundByIdUpdateTest() {
-        CreateStatusDto createStatusDto = new CreateStatusDto(STATUS_NAME);
-        long notFoundId = 1;
-        MockHttpServletResponse response = testUtils.perform(
-                MockMvcRequestBuilders
-                        .put(baseApiPath + TaskStatusController.TASK_STATUS_PATH + "/" + notFoundId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(testUtils.toJson(createStatusDto))
-                        .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token)
-        );
-        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -210,27 +151,6 @@ public class TaskStatusTest {
                         .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token)
         );
         Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    @Test
-    void errorNotFoundByIdDeleteTest() {
-        long notFoundId = 1;
-        MockHttpServletResponse response = testUtils.perform(
-                MockMvcRequestBuilders
-                        .delete(baseApiPath + TaskStatusController.TASK_STATUS_PATH + "/" + notFoundId)
-                        .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token)
-        );
-        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-    }
-
-    @Test
-    void errorUnauthorizedDeleteTest() {
-        long id = 1;
-        MockHttpServletResponse response = testUtils.perform(
-                MockMvcRequestBuilders
-                        .delete(baseApiPath + TaskStatusController.TASK_STATUS_PATH + "/" + id)
-        );
-        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test

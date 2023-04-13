@@ -11,6 +11,17 @@ public class UpdateTaskDto {
     @NotNull
     private Long taskStatusId;
 
+    public UpdateTaskDto(String name, String description, Long executorId, Long taskStatusId) {
+        this.name = name;
+        this.description = description;
+        this.executorId = executorId;
+        this.taskStatusId = taskStatusId;
+    }
+
+    public UpdateTaskDto() {
+
+    }
+
     public String getName() {
         return name;
     }

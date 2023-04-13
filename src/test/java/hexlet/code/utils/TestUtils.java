@@ -3,13 +3,17 @@ package hexlet.code.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.controller.AuthController;
+import hexlet.code.controller.TaskController;
 import hexlet.code.controller.TaskStatusController;
 import hexlet.code.controller.UserController;
 import hexlet.code.dto.CreateStatusDto;
+import hexlet.code.dto.CreateTaskDto;
 import hexlet.code.dto.GetStatusDto;
+import hexlet.code.dto.GetTaskDto;
 import hexlet.code.dto.GetUserDto;
 import hexlet.code.dto.CreateUserDto;
 import hexlet.code.dto.AuthDto;
+import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.security.JwtTokenFilter;
@@ -34,6 +38,7 @@ public class TestUtils {
     private final MockMvc mockMvc;
     private final UserRepository userRepository;
     private final TaskStatusRepository taskStatusRepository;
+    private final TaskRepository taskRepository;
 
     @Value("${base-api-url}")
     private String baseApiPath;
@@ -42,11 +47,13 @@ public class TestUtils {
     public TestUtils(ObjectMapper objectMapper,
                      MockMvc mockMvc,
                      UserRepository userRepository,
-                     TaskStatusRepository taskStatusRepository) {
+                     TaskStatusRepository taskStatusRepository,
+                     TaskRepository taskRepository) {
         this.objectMapper = objectMapper;
         this.mockMvc = mockMvc;
         this.userRepository = userRepository;
         this.taskStatusRepository = taskStatusRepository;
+        this.taskRepository = taskRepository;
     }
 
     public MockHttpServletResponse perform(MockHttpServletRequestBuilder requestBuilder) {
@@ -87,15 +94,34 @@ public class TestUtils {
         }
     }
 
-    public String performAuthenticate(AuthDto authDto) throws UnsupportedEncodingException {
+    public GetTaskDto defaultAddTask(CreateTaskDto dto, String token) {
+        MockHttpServletResponse response = perform(MockMvcRequestBuilders
+                .post(baseApiPath + TaskController.TASK_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(dto))
+                .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token));
+        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        try {
+            return fromJson(response.getContentAsString(), GetTaskDto.class);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String performAuthenticate(AuthDto authDto) {
         MockHttpServletResponse response = perform(MockMvcRequestBuilders
                 .post(baseApiPath + AuthController.AUTH_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(authDto)));
         Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        String token = response.getContentAsString();
-        Assertions.assertThat(token).isNotEmpty();
-        return token;
+        try {
+            String token = response.getContentAsString();
+            Assertions.assertThat(token).isNotEmpty();
+            return token;
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public <T> T fromJson(String json, Class<T> mappedClass) {
@@ -115,6 +141,7 @@ public class TestUtils {
     }
 
     public void clearAllRepository() {
+        taskRepository.deleteAll();
         taskStatusRepository.deleteAll();
         userRepository.deleteAll();
     }

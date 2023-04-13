@@ -32,7 +32,7 @@ public class AuthorizationHelper {
         if (task == null) {
             return true;
         }
-        return idFromAuthenticate.equals(task.getId());
+        return idFromAuthenticate.equals(task.getAuthor().getId());
     }
 
     private User getUserByAuthenticationName() {

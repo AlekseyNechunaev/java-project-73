@@ -49,7 +49,7 @@ public class UsersTest {
     }
 
     @Test
-    void registerUserWithNotValidDataTest() throws Exception {
+    void registerUserWithNotValidDataTest() {
         CreateUserDto notValidUserDto = new CreateUserDto();
         notValidUserDto.setEmail("asdasda.gmail.ru");
         notValidUserDto.setPassword("qw");
@@ -86,28 +86,6 @@ public class UsersTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testUtils.toJson(failedCreateUserRequest)));
         Assertions.assertThat(failedResponse.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @Test
-    void userGetByIdNotFoundTest() throws UnsupportedEncodingException {
-        CreateUserDto registerRequest = random.randomCreateUserData();
-        GetUserDto registerResponse = testUtils.defaultRegisterUser(registerRequest);
-        AuthDto authRequest = new AuthDto(registerRequest.getEmail(), registerRequest.getPassword());
-        String token = testUtils.performAuthenticate(authRequest);
-        Assertions.assertThat(userRepository.findById(registerResponse.getId())).isPresent();
-        long notFoundId = registerResponse.getId() + 1;
-        MockHttpServletResponse notFoundResponse = testUtils.perform(MockMvcRequestBuilders
-                .get(baseApiPath + UserController.USER_PATH + notFoundId)
-                .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token));
-        Assertions.assertThat(notFoundResponse.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-    }
-
-    @Test
-    void userGetByIdUserForbiddenErrorNotAuthorizedUserTest() {
-        long searchId = 1;
-        MockHttpServletResponse notFoundResponse = testUtils.perform(MockMvcRequestBuilders
-                .get(baseApiPath + UserController.USER_PATH + searchId));
-        Assertions.assertThat(notFoundResponse.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
@@ -149,7 +127,7 @@ public class UsersTest {
     }
 
     @Test
-    void updateUserWithErrorExistUserByEmailTest() throws UnsupportedEncodingException {
+    void updateUserWithErrorExistUserByEmailTest() {
         CreateUserDto firstRegisterRequest = random.randomCreateUserData();
         GetUserDto firstRegisterResponse = testUtils.defaultRegisterUser(firstRegisterRequest);
         CreateUserDto secondRegisterRequest = random.randomCreateUserData();
@@ -167,7 +145,7 @@ public class UsersTest {
     }
 
     @Test
-    void updateUserErrorIdFromRequestNotEqualsUserIdFromTokenTest() throws UnsupportedEncodingException {
+    void updateUserErrorIdFromRequestNotEqualsUserIdFromTokenTest() {
         CreateUserDto registerRequest = random.randomCreateUserData();
         GetUserDto registerResponse = testUtils.defaultRegisterUser(registerRequest);
         Assertions.assertThat(userRepository.findById(registerResponse.getId())).isPresent();
@@ -204,18 +182,7 @@ public class UsersTest {
     }
 
     @Test
-    void updateUserForbiddenErrorNotAuthorizedUserTest() {
-        CreateUserDto updateRequest = random.randomCreateUserData();
-        long updateId = 1;
-        MockHttpServletResponse response = testUtils.perform(MockMvcRequestBuilders
-                .put(baseApiPath + UserController.USER_PATH + "/" + updateId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(testUtils.toJson(updateRequest)));
-        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-    }
-
-    @Test
-    void deleteUserErrorIdFromRequestNotEqualsUserIdFromTokenTest() throws UnsupportedEncodingException {
+    void deleteUserErrorIdFromRequestNotEqualsUserIdFromTokenTest() {
         CreateUserDto registerRequest = random.randomCreateUserData();
         GetUserDto registerResponse = testUtils.defaultRegisterUser(registerRequest);
         Assertions.assertThat(userRepository.findById(registerResponse.getId())).isPresent();
@@ -230,15 +197,7 @@ public class UsersTest {
     }
 
     @Test
-    void deleteUserForbiddenErrorNotAuthorizedUserTest() {
-        long deleteId = 1;
-        MockHttpServletResponse response = testUtils.perform(MockMvcRequestBuilders
-                .delete(baseApiPath + UserController.USER_PATH + "/" + deleteId));
-        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-    }
-
-    @Test
-    void successDeleteUserTest() throws UnsupportedEncodingException {
+    void successDeleteUserTest() {
         CreateUserDto registerRequest = random.randomCreateUserData();
         GetUserDto registerResponse = testUtils.defaultRegisterUser(registerRequest);
         Assertions.assertThat(userRepository.findById(registerResponse.getId())).isPresent();

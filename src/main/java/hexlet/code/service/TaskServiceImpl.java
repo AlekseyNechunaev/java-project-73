@@ -88,6 +88,7 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new ResourceNotExistException(ExceptionMessage.EXECUTOR_NOT_EXIST));
         TaskStatus status = taskStatusRepository.findById(dto.getTaskStatusId())
                 .orElseThrow(() -> new ResourceNotExistException(ExceptionMessage.STATUS_NOT_EXIST));
+        task.setName(dto.getName());
         task.setExecutor(executor);
         task.setDescription(dto.getDescription());
         task.setTaskStatus(status);
