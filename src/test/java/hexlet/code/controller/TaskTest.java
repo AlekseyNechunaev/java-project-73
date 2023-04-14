@@ -73,7 +73,6 @@ public class TaskTest {
     @Test
     void successFindAllTest() throws UnsupportedEncodingException {
         testUtils.defaultAddTask(new CreateTaskDto("task", "description",
-                getUserDto.getId(),
                 null,
                 getStatusDto.getId()
         ), token);
@@ -92,7 +91,6 @@ public class TaskTest {
         String name = "task";
         String description = "description";
         GetTaskDto createResponseBody = testUtils.defaultAddTask(new CreateTaskDto(name, description,
-                getUserDto.getId(),
                 null,
                 getStatusDto.getId()
         ), token);
@@ -109,7 +107,6 @@ public class TaskTest {
     @Test
     void createValidationErrorTest() {
         CreateTaskDto createTaskDto = new CreateTaskDto(null, "description",
-                getUserDto.getId(),
                 null,
                 null);
         MockHttpServletResponse response = testUtils.perform(MockMvcRequestBuilders
@@ -125,7 +122,6 @@ public class TaskTest {
         String name = "task";
         String description = "description";
         CreateTaskDto createTaskDto = new CreateTaskDto(name, description,
-                getUserDto.getId(),
                 null,
                 getStatusDto.getId()
         );
@@ -139,28 +135,10 @@ public class TaskTest {
     }
 
     @Test
-    void createTaskAuthorNotExistErrorTest() {
-        String name = "task";
-        String description = "description";
-        CreateTaskDto createTaskDto = new CreateTaskDto(name, description,
-                getUserDto.getId() + 1,
-                getUserDto.getId(),
-                getStatusDto.getId()
-        );
-        MockHttpServletResponse response = testUtils.perform(MockMvcRequestBuilders
-                .post(baseApiPath + TaskController.TASK_PATH)
-                .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(testUtils.toJson(createTaskDto)));
-        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @Test
     void createTaskExecutorNotExistErrorTest() {
         String name = "task";
         String description = "description";
         CreateTaskDto createTaskDto = new CreateTaskDto(name, description,
-                getUserDto.getId(),
                 getUserDto.getId() + 1,
                 getStatusDto.getId()
         );
@@ -178,7 +156,6 @@ public class TaskTest {
         String description = "description";
         CreateTaskDto createTaskDto = new CreateTaskDto(name, description,
                 getUserDto.getId(),
-                getUserDto.getId(),
                 getStatusDto.getId() + 1
         );
         MockHttpServletResponse response = testUtils.perform(MockMvcRequestBuilders
@@ -195,7 +172,6 @@ public class TaskTest {
         String description = "description";
         CreateTaskDto createTaskDto = new CreateTaskDto(name, description,
                 getUserDto.getId(),
-                getUserDto.getId(),
                 getStatusDto.getId()
         );
         testUtils.defaultAddTask(createTaskDto, token);
@@ -206,7 +182,6 @@ public class TaskTest {
         String name = "task";
         String description = "description";
         CreateTaskDto createTaskDto = new CreateTaskDto(name, description,
-                getUserDto.getId(),
                 getUserDto.getId(),
                 getStatusDto.getId()
         );
@@ -232,7 +207,6 @@ public class TaskTest {
         String description = "description";
         CreateTaskDto createTaskDto = new CreateTaskDto(name, description,
                 getUserDto.getId(),
-                getUserDto.getId(),
                 getStatusDto.getId()
         );
         GetTaskDto createResponseBody = testUtils.defaultAddTask(createTaskDto, token);
@@ -256,7 +230,6 @@ public class TaskTest {
         String name = "task";
         String description = "description";
         CreateTaskDto createTaskDto = new CreateTaskDto(name, description,
-                getUserDto.getId(),
                 getUserDto.getId(),
                 getStatusDto.getId()
         );
@@ -293,7 +266,6 @@ public class TaskTest {
         String description = "description";
         CreateTaskDto createTaskDto = new CreateTaskDto(name, description,
                 getUserDto.getId(),
-                getUserDto.getId(),
                 getStatusDto.getId()
         );
         GetTaskDto createResponseBody = testUtils.defaultAddTask(createTaskDto, token);
@@ -308,7 +280,6 @@ public class TaskTest {
         String name = "task";
         String description = "description";
         CreateTaskDto createTaskDto = new CreateTaskDto(name, description,
-                getUserDto.getId(),
                 getUserDto.getId(),
                 getStatusDto.getId()
         );

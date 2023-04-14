@@ -35,7 +35,7 @@ public class AuthorizationHelper {
         return idFromAuthenticate.equals(task.getAuthor().getId());
     }
 
-    private User getUserByAuthenticationName() {
+    public User getUserByAuthenticationName() {
         String email = getUserNameFromAuthentication();
         return userRepository.findByEmail(email).get();
     }

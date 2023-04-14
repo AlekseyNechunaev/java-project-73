@@ -14,6 +14,7 @@ public interface TaskMapper {
     @Mapping(target = "author", ignore = true)
     @Mapping(target = "executor", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "labels", ignore = true)
     Task map(CreateTaskDto dto);
 
     GetTaskDto map(Task task);

@@ -1,6 +1,7 @@
 package hexlet.code.dto;
 
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 public class UpdateTaskDto {
     @NotNull
@@ -10,6 +11,8 @@ public class UpdateTaskDto {
 
     @NotNull
     private Long taskStatusId;
+
+    private Set<Long> labelIds;
 
     public UpdateTaskDto(String name, String description, Long executorId, Long taskStatusId) {
         this.name = name;
@@ -52,5 +55,13 @@ public class UpdateTaskDto {
 
     public void setTaskStatusId(Long taskStatusId) {
         this.taskStatusId = taskStatusId;
+    }
+
+    public Set<Long> getLabelIds() {
+        return labelIds;
+    }
+
+    public void setLabelIds(Set<Long> labelIds) {
+        this.labelIds = labelIds;
     }
 }

@@ -5,6 +5,7 @@ import hexlet.code.common.utils.Utils;
 import hexlet.code.dto.CreateTaskDto;
 import hexlet.code.dto.GetTaskDto;
 import hexlet.code.dto.UpdateTaskDto;
+import hexlet.code.entity.Label;
 import hexlet.code.entity.Task;
 import hexlet.code.entity.TaskStatus;
 import hexlet.code.entity.User;
@@ -12,11 +13,14 @@ import hexlet.code.exception.ExceptionMessage;
 import hexlet.code.exception.ResourceExistException;
 import hexlet.code.exception.ResourceNotExistException;
 import hexlet.code.exception.ResourceNotFoundException;
+import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
+import hexlet.code.security.AuthorizationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,16 +32,23 @@ public class TaskServiceImpl implements TaskService {
     private final TaskMapper taskMapper;
     private final UserRepository userRepository;
     private final TaskStatusRepository taskStatusRepository;
+    private final LabelRepository labelRepository;
+    private final AuthorizationHelper authorizationHelper;
 
     @Autowired
     public TaskServiceImpl(TaskRepository taskRepository,
                            TaskMapper taskMapper,
                            UserRepository userRepository,
-                           TaskStatusRepository taskStatusRepository) {
+                           TaskStatusRepository taskStatusRepository,
+                           LabelRepository labelRepository,
+                           AuthorizationHelper authorizationHelper
+    ) {
         this.taskRepository = taskRepository;
         this.taskMapper = taskMapper;
         this.userRepository = userRepository;
         this.taskStatusRepository = taskStatusRepository;
+        this.labelRepository = labelRepository;
+        this.authorizationHelper = authorizationHelper;
     }
 
     @Override
@@ -61,8 +72,7 @@ public class TaskServiceImpl implements TaskService {
         if (taskRepository.existsByName(dto.getName())) {
             throw new ResourceExistException(ExceptionMessage.TASK_EXIST_BY_NAME);
         }
-        User author = userRepository.findById(dto.getAuthorId())
-                .orElseThrow(() -> new ResourceNotExistException(ExceptionMessage.AUTHOR_NOT_EXIST));
+        User author = authorizationHelper.getUserByAuthenticationName();
         User executor = dto.getExecutorId() == null ? null : userRepository.findById(dto.getExecutorId())
                 .orElseThrow(() -> new ResourceNotExistException(ExceptionMessage.EXECUTOR_NOT_EXIST));
         TaskStatus status = taskStatusRepository.findById(dto.getTaskStatusId())
@@ -71,6 +81,10 @@ public class TaskServiceImpl implements TaskService {
         task.setAuthor(author);
         task.setExecutor(executor);
         task.setTaskStatus(status);
+        if (!CollectionUtils.isEmpty(dto.getLabelIds())) {
+            List<Label> labels = labelRepository.findAllById(dto.getLabelIds());
+            task.setLabels(labels);
+        }
         taskRepository.save(task);
         return taskMapper.map(task);
     }
@@ -92,6 +106,10 @@ public class TaskServiceImpl implements TaskService {
         task.setExecutor(executor);
         task.setDescription(dto.getDescription());
         task.setTaskStatus(status);
+        if (!CollectionUtils.isEmpty(dto.getLabelIds())) {
+            List<Label> labels = labelRepository.findAllById(dto.getLabelIds());
+            task.setLabels(labels);
+        }
         taskRepository.save(task);
         return taskMapper.map(task);
     }

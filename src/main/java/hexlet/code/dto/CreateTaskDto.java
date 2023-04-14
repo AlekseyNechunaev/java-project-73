@@ -2,24 +2,23 @@ package hexlet.code.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 public class CreateTaskDto {
 
     @NotBlank
     private String name;
     private String description;
-
-    @NotNull
-    private Long authorId;
     private Long executorId;
 
     @NotNull
     private Long taskStatusId;
 
-    public CreateTaskDto(String name, String description, Long authorId, Long executorId, Long taskStatusId) {
+    private Set<Long> labelIds;
+
+    public CreateTaskDto(String name, String description, Long executorId, Long taskStatusId) {
         this.name = name;
         this.description = description;
-        this.authorId = authorId;
         this.executorId = executorId;
         this.taskStatusId = taskStatusId;
     }
@@ -44,14 +43,6 @@ public class CreateTaskDto {
         this.description = description;
     }
 
-    public Long getAuthorId() {
-        return authorId;
-    }
-
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
-    }
-
     public Long getExecutorId() {
         return executorId;
     }
@@ -66,5 +57,13 @@ public class CreateTaskDto {
 
     public void setTaskStatusId(Long taskStatusId) {
         this.taskStatusId = taskStatusId;
+    }
+
+    public Set<Long> getLabelIds() {
+        return labelIds;
+    }
+
+    public void setLabelIds(Set<Long> labelIds) {
+        this.labelIds = labelIds;
     }
 }
