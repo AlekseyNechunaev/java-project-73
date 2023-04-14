@@ -128,3 +128,68 @@ databaseChangeLog:
         referencedTableName: statuses
         validate: true
 
+- changeSet:
+    id: 1681460662498-1
+    author: alekseynechunaev (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: labelsPK
+            name: id
+            type: BIGINT
+        - column:
+            name: created_at
+            type: TIMESTAMP
+        - column:
+            name: name
+            type: VARCHAR(255)
+        tableName: labels
+- changeSet:
+    id: 1681460662498-2
+    author: alekseynechunaev (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: tasks_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: labels_id
+            type: BIGINT
+        tableName: tasks_labels
+- changeSet:
+    id: 1681460662498-3
+    author: alekseynechunaev (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: labels_id
+        baseTableName: tasks_labels
+        constraintName: FK1jqo1eikgg8xnhi58yp81b8nl
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: labels
+        validate: true
+- changeSet:
+    id: 1681460662498-4
+    author: alekseynechunaev (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: tasks_id
+        baseTableName: tasks_labels
+        constraintName: FKtmt7qqcx2mbu4jhmxu9g53o9j
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: tasks
+        validate: true
+
