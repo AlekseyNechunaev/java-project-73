@@ -174,7 +174,8 @@ public class TaskTest {
                 getUserDto.getId(),
                 getStatusDto.getId()
         );
-        testUtils.defaultAddTask(createTaskDto, token);
+        GetTaskDto responseBody = testUtils.defaultAddTask(createTaskDto, token);
+        Assertions.assertThat(taskRepository.findById(responseBody.getId())).isPresent();
     }
 
     @Test

@@ -3,16 +3,20 @@ package hexlet.code.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.controller.AuthController;
+import hexlet.code.controller.LabelController;
 import hexlet.code.controller.TaskController;
 import hexlet.code.controller.TaskStatusController;
 import hexlet.code.controller.UserController;
+import hexlet.code.dto.CreateLabelDto;
 import hexlet.code.dto.CreateStatusDto;
 import hexlet.code.dto.CreateTaskDto;
+import hexlet.code.dto.GetLabelDto;
 import hexlet.code.dto.GetStatusDto;
 import hexlet.code.dto.GetTaskDto;
 import hexlet.code.dto.GetUserDto;
 import hexlet.code.dto.CreateUserDto;
 import hexlet.code.dto.AuthDto;
+import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
@@ -39,6 +43,7 @@ public class TestUtils {
     private final UserRepository userRepository;
     private final TaskStatusRepository taskStatusRepository;
     private final TaskRepository taskRepository;
+    private final LabelRepository labelRepository;
 
     @Value("${base-api-url}")
     private String baseApiPath;
@@ -48,12 +53,14 @@ public class TestUtils {
                      MockMvc mockMvc,
                      UserRepository userRepository,
                      TaskStatusRepository taskStatusRepository,
-                     TaskRepository taskRepository) {
+                     TaskRepository taskRepository,
+                     LabelRepository labelRepository) {
         this.objectMapper = objectMapper;
         this.mockMvc = mockMvc;
         this.userRepository = userRepository;
         this.taskStatusRepository = taskStatusRepository;
         this.taskRepository = taskRepository;
+        this.labelRepository = labelRepository;
     }
 
     public MockHttpServletResponse perform(MockHttpServletRequestBuilder requestBuilder) {
@@ -108,6 +115,20 @@ public class TestUtils {
         }
     }
 
+    public GetLabelDto defaultAddLabel(CreateLabelDto dto, String token) {
+        MockHttpServletResponse response = perform(MockMvcRequestBuilders
+                .post(baseApiPath + LabelController.LABEL_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(dto))
+                .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token));
+        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        try {
+            return fromJson(response.getContentAsString(), GetLabelDto.class);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String performAuthenticate(AuthDto authDto) {
         MockHttpServletResponse response = perform(MockMvcRequestBuilders
                 .post(baseApiPath + AuthController.AUTH_PATH)
@@ -141,6 +162,7 @@ public class TestUtils {
     }
 
     public void clearAllRepository() {
+        labelRepository.deleteAll();
         taskRepository.deleteAll();
         taskStatusRepository.deleteAll();
         userRepository.deleteAll();

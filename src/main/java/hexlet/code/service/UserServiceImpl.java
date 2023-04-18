@@ -3,7 +3,6 @@ package hexlet.code.service;
 import hexlet.code.common.mapper.UserMapper;
 import hexlet.code.dto.CreateUserDto;
 import hexlet.code.dto.GetUserDto;
-import hexlet.code.entity.Task;
 import hexlet.code.entity.User;
 import hexlet.code.exception.ExceptionMessage;
 import hexlet.code.exception.IllegalOperationException;
@@ -21,17 +20,14 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final TaskRepository taskRepository;
     private final UserMapper mapper;
     private final PasswordEncoder encoder;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
-                           TaskRepository taskRepository,
                            UserMapper mapper,
                            PasswordEncoder encoder) {
         this.userRepository = userRepository;
-        this.taskRepository = taskRepository;
         this.mapper = mapper;
         this.encoder = encoder;
     }
@@ -77,9 +73,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Long id) {
         User user = userRepository.getById(id);
-        List<Task> authorTask = taskRepository.findAllByAuthorId(user.getId());
-        List<Task> executorTask = taskRepository.findAllByExecutorId(user.getId());
-        if (!authorTask.isEmpty() || !executorTask.isEmpty()) {
+        if (!user.getAuthorTasks().isEmpty() || !user.getExecutorTasks().isEmpty()) {
             throw new IllegalOperationException(ExceptionMessage.ILLEGAL_DELETE_USER);
         }
         userRepository.delete(user);

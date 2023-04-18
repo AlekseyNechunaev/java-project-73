@@ -9,7 +9,6 @@ import hexlet.code.exception.ExceptionMessage;
 import hexlet.code.exception.IllegalOperationException;
 import hexlet.code.exception.ResourceExistException;
 import hexlet.code.exception.ResourceNotFoundException;
-import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,15 +20,12 @@ import java.util.stream.Collectors;
 public class TaskStatusServiceImpl implements TaskStatusService {
 
     private final TaskStatusRepository taskStatusRepository;
-    private final TaskRepository taskRepository;
     private final TaskStatusMapper mapper;
 
     @Autowired
     public TaskStatusServiceImpl(TaskStatusRepository taskStatusRepository,
-                                 TaskRepository taskRepository,
                                  TaskStatusMapper mapper) {
         this.taskStatusRepository = taskStatusRepository;
-        this.taskRepository = taskRepository;
         this.mapper = mapper;
     }
 
@@ -77,7 +73,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     public void delete(Long id) {
         TaskStatus status = taskStatusRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.RESOURCE_NOT_FOUND));
-        if (!taskRepository.findAllByTaskStatusId(id).isEmpty()) {
+        if (!status.getTasks().isEmpty()) {
             throw new IllegalOperationException(ExceptionMessage.ILLEGAL_DELETE_STATUS);
         }
         taskStatusRepository.delete(status);

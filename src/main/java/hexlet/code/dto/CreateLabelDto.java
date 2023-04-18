@@ -6,6 +6,16 @@ public class CreateLabelDto {
     @NotBlank
     private String name;
 
+
+    public CreateLabelDto(String name) {
+        this.name = name;
+    }
+
+    public CreateLabelDto() {
+
+    }
+
+
     public String getName() {
         return name;
     }
