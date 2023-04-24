@@ -1,5 +1,6 @@
 package hexlet.code.service;
 
+import com.querydsl.core.types.Predicate;
 import hexlet.code.common.mapper.TaskMapper;
 import hexlet.code.common.utils.Utils;
 import hexlet.code.dto.CreateTaskDto;
@@ -22,7 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,8 +56,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<GetTaskDto> findAll() {
-        return taskRepository.findAll().stream()
+    public List<GetTaskDto> findAll(Predicate predicate) {
+        List<Task> tasks = (List<Task>) taskRepository.findAll(predicate);
+        return tasks.stream()
                 .map(taskMapper::map)
                 .collect(Collectors.toList());
     }
@@ -81,10 +86,8 @@ public class TaskServiceImpl implements TaskService {
         task.setAuthor(author);
         task.setExecutor(executor);
         task.setTaskStatus(status);
-        if (!CollectionUtils.isEmpty(dto.getLabelIds())) {
-            List<Label> labels = labelRepository.findAllById(dto.getLabelIds());
-            task.setLabels(labels);
-        }
+        List<Label> labels = takeAllLabelsIsExist(dto.getLabelIds());
+        task.setLabels(labels);
         taskRepository.save(task);
         return taskMapper.map(task);
     }
@@ -106,10 +109,8 @@ public class TaskServiceImpl implements TaskService {
         task.setExecutor(executor);
         task.setDescription(dto.getDescription());
         task.setTaskStatus(status);
-        if (!CollectionUtils.isEmpty(dto.getLabelIds())) {
-            List<Label> labels = labelRepository.findAllById(dto.getLabelIds());
-            task.setLabels(labels);
-        }
+        List<Label> labels = takeAllLabelsIsExist(dto.getLabelIds());
+        task.setLabels(labels);
         taskRepository.save(task);
         return taskMapper.map(task);
     }
@@ -119,5 +120,22 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.RESOURCE_NOT_FOUND));
         taskRepository.delete(task);
+    }
+
+    private List<Label> takeAllLabelsIsExist(Collection<Long> requestLabelIds) {
+        if (CollectionUtils.isEmpty(requestLabelIds)) {
+            return Collections.emptyList();
+        }
+        List<Label> foundLabels = labelRepository.findAllById(requestLabelIds);
+        Set<Long> foundLabelIds = foundLabels.stream()
+                .map(Label::getId)
+                .collect(Collectors.toSet());
+        if (foundLabelIds.size() != requestLabelIds.size()) {
+            Set<Long> diffIds = requestLabelIds.stream()
+                    .filter(id -> !foundLabelIds.contains(id))
+                    .collect(Collectors.toSet());
+            throw new ResourceNotExistException(ExceptionMessage.LABELS_EXIST_BY_ID + ": " + diffIds);
+        }
+        return foundLabels;
     }
 }

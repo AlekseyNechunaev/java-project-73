@@ -87,6 +87,40 @@ public class TaskTest {
     }
 
     @Test
+    void successFindWithFiltrationTest() throws UnsupportedEncodingException {
+        testUtils.defaultAddTask(new CreateTaskDto("task", "description",
+                null,
+                getStatusDto.getId()
+        ), token);
+        String queryParam = "?taskStatus=" + getStatusDto.getId() + "&authorId=" + getUserDto.getId();
+        MockHttpServletResponse response = testUtils.perform(MockMvcRequestBuilders
+                .get(baseApiPath + TaskController.TASK_PATH + queryParam)
+                .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token));
+        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        List<GetTaskDto> responseBody = Arrays.asList(
+                testUtils.fromJson(response.getContentAsString(),
+                        GetTaskDto[].class));
+        Assertions.assertThat(responseBody).hasSize(1);
+    }
+
+    @Test
+    void notFoundWithFiltrationTest() throws UnsupportedEncodingException {
+        testUtils.defaultAddTask(new CreateTaskDto("task", "description",
+                null,
+                getStatusDto.getId()
+        ), token);
+        String queryParam = "?taskStatus=" + getStatusDto.getId() + "&authorId=" + getUserDto.getId() + 1;
+        MockHttpServletResponse response = testUtils.perform(MockMvcRequestBuilders
+                .get(baseApiPath + TaskController.TASK_PATH + queryParam)
+                .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token));
+        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        List<GetTaskDto> responseBody = Arrays.asList(
+                testUtils.fromJson(response.getContentAsString(),
+                        GetTaskDto[].class));
+        Assertions.assertThat(responseBody).isEmpty();
+    }
+
+    @Test
     void successFindByIdTest() throws UnsupportedEncodingException {
         String name = "task";
         String description = "description";

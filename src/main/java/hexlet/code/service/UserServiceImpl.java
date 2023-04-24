@@ -7,7 +7,6 @@ import hexlet.code.entity.User;
 import hexlet.code.exception.ExceptionMessage;
 import hexlet.code.exception.IllegalOperationException;
 import hexlet.code.exception.ResourceExistException;
-import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
