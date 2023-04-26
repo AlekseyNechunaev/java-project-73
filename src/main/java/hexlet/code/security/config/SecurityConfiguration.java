@@ -2,7 +2,6 @@ package hexlet.code.security.config;
 
 import hexlet.code.controller.AuthController;
 import hexlet.code.controller.UserController;
-import hexlet.code.controller.WelcomeController;
 import hexlet.code.security.JwtTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,7 +47,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, baseApiUrl + UserController.USER_PATH).permitAll()
                 .antMatchers(HttpMethod.POST, baseApiUrl + AuthController.AUTH_PATH).permitAll()
                 .antMatchers(baseApiUrl + ANY_MATCHER).authenticated()
-                .antMatchers(WelcomeController.WELCOME_PATH).permitAll()
                 .anyRequest()
                 .permitAll();
         http.addFilterBefore(jwtTokenFilter,

@@ -2,6 +2,9 @@ package hexlet.code.controller;
 
 import hexlet.code.dto.AuthDto;
 import hexlet.code.service.AuthService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,8 +22,13 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "success authenticate"),
+            @ApiResponse(responseCode = "401", description = "error authenticate")
+    })
     @PostMapping
-    public String login(@RequestBody AuthDto authDto) {
+    public String login(@RequestBody @Parameter(description = "user data for authentication", required = true)
+                            AuthDto authDto) {
         return authService.authenticate(authDto);
     }
 }

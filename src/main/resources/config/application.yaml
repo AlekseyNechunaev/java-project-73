@@ -16,3 +16,6 @@ jwt:
   issuer: hexlet-blog
   expireSeconds: 1800
   secretKey: "8A7M51Xb29RCloonIlI3BXUHGILuguTO"
+springdoc:
+  swagger-ui:
+    path: /swagger.html
