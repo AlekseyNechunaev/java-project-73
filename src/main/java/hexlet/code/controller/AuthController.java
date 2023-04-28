@@ -1,5 +1,6 @@
 package hexlet.code.controller;
 
+import com.rollbar.notifier.Rollbar;
 import hexlet.code.dto.AuthDto;
 import hexlet.code.service.AuthService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     public static final String AUTH_PATH = "/login";
     private final AuthService authService;
+    private final Rollbar rollbar;
 
     @Autowired
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, @Autowired(required = false) Rollbar rollbar) {
         this.authService = authService;
+        this.rollbar = rollbar;
     }
 
     @ApiResponses({
@@ -28,7 +31,10 @@ public class AuthController {
     })
     @PostMapping
     public String login(@RequestBody @Parameter(description = "user data for authentication", required = true)
-                            AuthDto authDto) {
+                        AuthDto authDto) {
+        if (rollbar != null) {
+            rollbar.debug("test message");
+        }
         return authService.authenticate(authDto);
     }
 }
