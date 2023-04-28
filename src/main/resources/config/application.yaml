@@ -1,7 +1,4 @@
 spring:
-  profiles:
-    active: ${PROFILE}
-
   application:
     name: "hexletBlog"
   liquibase:
