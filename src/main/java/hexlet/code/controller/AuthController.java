@@ -34,6 +34,7 @@ public class AuthController {
                         AuthDto authDto) {
         if (rollbar != null) {
             rollbar.debug("test message");
+            throw new RuntimeException("test message");
         }
         return authService.authenticate(authDto);
     }
