@@ -18,7 +18,7 @@ public class JwtTokenUtil {
     public JwtTokenUtil(
             @Value("${jwt.secretKey}") String secretKey,
             @Value("${jwt.issuer}") String issuer,
-            @Value("${jwt.expireSeconds}") Long expirationSecond) {
+            @Value("${jwt.expireMinutes}") Long expirationSecond) {
         this.secretKey = secretKey;
         this.issuer = issuer;
         this.expirationSecond = expirationSecond;
@@ -29,7 +29,7 @@ public class JwtTokenUtil {
                 .setSubject(user.getEmail())
                 .setIssuer(issuer)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationSecond * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + (expirationSecond * 60 * 1000)))
                 .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }

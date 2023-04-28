@@ -9,3 +9,7 @@ spring:
   # Используем тот же файл миграции, что и для базы данных в приложении
   liquibase:
     change-log: classpath:db/changelog/changelog-master.yaml
+jwt:
+  issuer: hexlet-blog
+  expireMinutes: 30
+  secretKey: "test-secret"
