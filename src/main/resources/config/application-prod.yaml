@@ -9,6 +9,6 @@ logging:
   level:
     root: info
 jwt:
-  issuer: ${JWT_ISSUER}
-  expireMinutes: ${JWT_EXPIRE_MINUTES}
-  secretKey: ${JWT_SECRET_KEY}
+  issuer: "hexlet-blog"
+  expireMinutes: 30
+  secretKey: "test-key"
