@@ -78,7 +78,7 @@ public class TestUtils {
                 .post(baseApiPath + UserController.USER_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(userDto)));
-        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         Assertions.assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON.toString());
         try {
             return fromJson(response.getContentAsString(), GetUserDto.class);
@@ -93,7 +93,7 @@ public class TestUtils {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token)
                 .content(toJson(dto)));
-        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         try {
             return fromJson(response.getContentAsString(), GetStatusDto.class);
         } catch (UnsupportedEncodingException e) {
@@ -107,7 +107,7 @@ public class TestUtils {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(dto))
                 .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token));
-        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         try {
             return fromJson(response.getContentAsString(), GetTaskDto.class);
         } catch (UnsupportedEncodingException e) {
@@ -121,7 +121,7 @@ public class TestUtils {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(dto))
                 .header(HttpHeaders.AUTHORIZATION, JwtTokenFilter.BEARER_PREFIX + " " + token));
-        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        Assertions.assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         try {
             return fromJson(response.getContentAsString(), GetLabelDto.class);
         } catch (UnsupportedEncodingException e) {
