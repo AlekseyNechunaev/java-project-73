@@ -33,11 +33,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (!StringUtils.hasText(authHeader) || !authHeader.startsWith(BEARER_PREFIX)) {
+        if (!StringUtils.hasText(authHeader)) {
             filterChain.doFilter(request, response);
             return;
         }
-        final String token = authHeader.substring(7);
+        final String token = authHeader.replaceFirst(BEARER_PREFIX, "").trim();
         if (!jwtTokenUtil.validate(token)) {
             filterChain.doFilter(request, response);
             return;
