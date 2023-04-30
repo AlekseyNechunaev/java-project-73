@@ -64,6 +64,7 @@ public class LabelServiceImpl implements LabelService {
             throw new ResourceExistException(ExceptionMessage.LABEL_EXIST_BY_NAME);
         }
         label.setName(dto.getName());
+        labelRepository.save(label);
         return mapper.map(label);
     }
 
