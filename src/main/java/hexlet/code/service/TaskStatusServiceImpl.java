@@ -12,6 +12,7 @@ import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.repository.TaskStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,7 +74,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     public void delete(Long id) {
         TaskStatus status = taskStatusRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.RESOURCE_NOT_FOUND));
-        if (!status.getTasks().isEmpty()) {
+        if (!CollectionUtils.isEmpty(status.getTasks())) {
             throw new IllegalOperationException(ExceptionMessage.ILLEGAL_DELETE_STATUS);
         }
         taskStatusRepository.delete(status);
