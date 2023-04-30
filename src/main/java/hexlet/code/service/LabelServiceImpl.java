@@ -12,6 +12,7 @@ import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.repository.LabelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,7 +73,7 @@ public class LabelServiceImpl implements LabelService {
     public void delete(Long id) {
         Label label = labelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.RESOURCE_NOT_FOUND));
-        if (!label.getTasks().isEmpty()) {
+        if (!CollectionUtils.isEmpty(label.getTasks())) {
             throw new IllegalOperationException(ExceptionMessage.ILLEGAL_DELETE_TASK);
         }
         labelRepository.delete(label);

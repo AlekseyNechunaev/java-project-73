@@ -11,6 +11,7 @@ import hexlet.code.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,7 +75,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Long id) {
         User user = userRepository.getById(id);
-        if (!user.getAuthorTasks().isEmpty() || !user.getExecutorTasks().isEmpty()) {
+        if (!CollectionUtils.isEmpty(user.getAuthorTasks()) || !CollectionUtils.isEmpty(user.getExecutorTasks())) {
             throw new IllegalOperationException(ExceptionMessage.ILLEGAL_DELETE_USER);
         }
         userRepository.delete(user);
