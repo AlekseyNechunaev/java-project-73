@@ -162,8 +162,8 @@ public class TestUtils {
     }
 
     public void clearAllRepository() {
-        labelRepository.deleteAll();
         taskRepository.deleteAll();
+        labelRepository.deleteAll();
         taskStatusRepository.deleteAll();
         userRepository.deleteAll();
     }
