@@ -1,12 +1,14 @@
 package hexlet.code.dto;
 
 import java.util.Date;
+import java.util.List;
 
 public class GetTaskDto {
     private long id;
     private GetUserDto author;
     private GetUserDto executor;
     private GetStatusDto taskStatus;
+    private List<GetLabelDto> labels;
     private String name;
     private String description;
     private Date createdAt;
@@ -65,5 +67,13 @@ public class GetTaskDto {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<GetLabelDto> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(List<GetLabelDto> labels) {
+        this.labels = labels;
     }
 }

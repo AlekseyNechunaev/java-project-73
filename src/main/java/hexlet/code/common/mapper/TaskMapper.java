@@ -6,7 +6,7 @@ import hexlet.code.entity.Task;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class, TaskStatusMapper.class})
+@Mapper(componentModel = "spring", uses = {UserMapper.class, TaskStatusMapper.class, LabelMapper.class})
 public interface TaskMapper {
 
     @Mapping(target = "id", ignore = true)
