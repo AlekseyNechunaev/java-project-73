@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: ${PROFILE:prod}
+    active: ${PROFILE}
   application:
     name: "hexletBlog"
   liquibase:
