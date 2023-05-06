@@ -2,6 +2,7 @@ package hexlet.code.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -32,6 +33,7 @@ public class User {
     private String lastName;
 
     @Email
+    @Column(unique = true)
     private String email;
 
     @NotBlank
@@ -110,4 +112,5 @@ public class User {
     public void setExecutorTasks(List<Task> executorTasks) {
         this.executorTasks = executorTasks;
     }
+
 }

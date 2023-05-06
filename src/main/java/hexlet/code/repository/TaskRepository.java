@@ -9,8 +9,4 @@ import org.springframework.stereotype.Repository;
 public interface TaskRepository extends
         JpaRepository<Task, Long>,
         QuerydslPredicateExecutor<Task> {
-
-    boolean existsByName(String name);
-
-    boolean existsByNameAndIdNot(String name, Long id);
 }

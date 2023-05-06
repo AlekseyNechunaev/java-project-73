@@ -6,13 +6,10 @@ import hexlet.code.dto.CreateLabelDto;
 import hexlet.code.dto.GetLabelDto;
 import hexlet.code.entity.Label;
 import hexlet.code.exception.ExceptionMessage;
-import hexlet.code.exception.IllegalOperationException;
-import hexlet.code.exception.ResourceExistException;
 import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.repository.LabelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,9 +44,6 @@ public class LabelServiceImpl implements LabelService {
     public GetLabelDto create(CreateLabelDto dto) {
         String trimmedName = Utils.trimmedText(dto.getName());
         dto.setName(trimmedName);
-        if (labelRepository.existsByName(dto.getName())) {
-            throw new ResourceExistException(ExceptionMessage.LABEL_EXIST_BY_NAME);
-        }
         Label label = mapper.map(dto);
         labelRepository.save(label);
         return mapper.map(label);
@@ -61,9 +55,6 @@ public class LabelServiceImpl implements LabelService {
                 .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.RESOURCE_NOT_FOUND));
         String trimmedName = Utils.trimmedText(dto.getName());
         dto.setName(trimmedName);
-        if (labelRepository.existsByNameAndIdIsNot(dto.getName(), id)) {
-            throw new ResourceExistException(ExceptionMessage.LABEL_EXIST_BY_NAME);
-        }
         label.setName(dto.getName());
         labelRepository.save(label);
         return mapper.map(label);
@@ -73,9 +64,6 @@ public class LabelServiceImpl implements LabelService {
     public void delete(Long id) {
         Label label = labelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.RESOURCE_NOT_FOUND));
-        if (!CollectionUtils.isEmpty(label.getTasks())) {
-            throw new IllegalOperationException(ExceptionMessage.ILLEGAL_DELETE_TASK);
-        }
         labelRepository.delete(label);
     }
 }

@@ -4,14 +4,10 @@ import hexlet.code.common.mapper.UserMapper;
 import hexlet.code.dto.CreateUserDto;
 import hexlet.code.dto.GetUserDto;
 import hexlet.code.entity.User;
-import hexlet.code.exception.ExceptionMessage;
-import hexlet.code.exception.IllegalOperationException;
-import hexlet.code.exception.ResourceExistException;
 import hexlet.code.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,9 +43,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public GetUserDto create(CreateUserDto dto) {
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new ResourceExistException(ExceptionMessage.USER_EXIST_BY_EMAIL);
-        }
         String encodePassword = encoder.encode(dto.getPassword());
         User user = mapper.map(dto);
         user.setPassword(encodePassword);
@@ -60,9 +53,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public GetUserDto update(Long id, CreateUserDto dto) {
         User user = userRepository.getById(id);
-        if (userRepository.existsByEmailAndIdIsNot(dto.getEmail(), id)) {
-            throw new ResourceExistException(ExceptionMessage.USER_EXIST_BY_EMAIL);
-        }
         User updatedUser = mapper.map(dto);
         String encodePassword = encoder.encode(dto.getPassword());
         updatedUser.setId(user.getId());
@@ -75,9 +65,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Long id) {
         User user = userRepository.getById(id);
-        if (!CollectionUtils.isEmpty(user.getAuthorTasks()) || !CollectionUtils.isEmpty(user.getExecutorTasks())) {
-            throw new IllegalOperationException(ExceptionMessage.ILLEGAL_DELETE_USER);
-        }
         userRepository.delete(user);
     }
 }

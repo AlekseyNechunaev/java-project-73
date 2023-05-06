@@ -12,8 +12,8 @@ public final class ExceptionMessage {
     public static final String ILLEGAL_DELETE_STATUS = "you cannot delete the status associated with tasks";
     public static final String ILLEGAL_DELETE_USER = "you cannot delete a user who is associated with tasks";
     public static final String LABEL_EXIST_BY_NAME = "a label with this name already exists";
-    public static final String ILLEGAL_DELETE_TASK = "you cannot delete a label who is associated with tasks";
-    public static final String LABELS_EXIST_BY_ID = "labels with these ids do not exist";
+    public static final String ILLEGAL_DELETE_LABEL = "you cannot delete a label who is associated with tasks";
+    public static final String LABELS_NOT_EXIST_BY_ID = "labels with these ids do not exist";
     private ExceptionMessage() {
 
     }

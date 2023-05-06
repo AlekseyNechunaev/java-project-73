@@ -2,6 +2,7 @@ package hexlet.code.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,6 +25,7 @@ public class TaskStatus {
     private Long id;
 
     @NotBlank
+    @Column(unique = true)
     private String name;
 
     @Temporal(TemporalType.TIMESTAMP)

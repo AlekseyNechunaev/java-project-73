@@ -13,15 +13,15 @@ import java.util.Date;
 public class JwtTokenUtil {
     private final String secretKey;
     private final String issuer;
-    private final Long expirationSecond;
+    private final Long expirationMinutes;
 
     public JwtTokenUtil(
             @Value("${jwt.secretKey}") String secretKey,
             @Value("${jwt.issuer}") String issuer,
-            @Value("${jwt.expireMinutes}") Long expirationSecond) {
+            @Value("${jwt.expireMinutes}") Long expirationMinutes) {
         this.secretKey = secretKey;
         this.issuer = issuer;
-        this.expirationSecond = expirationSecond;
+        this.expirationMinutes = expirationMinutes;
     }
 
     public String generateToken(User user) {
@@ -29,7 +29,7 @@ public class JwtTokenUtil {
                 .setSubject(user.getEmail())
                 .setIssuer(issuer)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + (expirationSecond * 60 * 1000)))
+                .setExpiration(new Date(System.currentTimeMillis() + (expirationMinutes * 60 * 1000)))
                 .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }

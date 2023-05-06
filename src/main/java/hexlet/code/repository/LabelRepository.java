@@ -6,8 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LabelRepository extends JpaRepository<Label, Long> {
-
-    boolean existsByName(String name);
-
-    boolean existsByNameAndIdIsNot(String name, Long id);
 }

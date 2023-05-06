@@ -11,7 +11,6 @@ import hexlet.code.entity.Task;
 import hexlet.code.entity.TaskStatus;
 import hexlet.code.entity.User;
 import hexlet.code.exception.ExceptionMessage;
-import hexlet.code.exception.ResourceExistException;
 import hexlet.code.exception.ResourceNotExistException;
 import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.repository.LabelRepository;
@@ -74,9 +73,6 @@ public class TaskServiceImpl implements TaskService {
     public GetTaskDto create(CreateTaskDto dto) {
         String trimmedName = Utils.trimmedText(dto.getName());
         dto.setName(trimmedName);
-        if (taskRepository.existsByName(dto.getName())) {
-            throw new ResourceExistException(ExceptionMessage.TASK_EXIST_BY_NAME);
-        }
         User author = authorizationHelper.getUserByAuthenticationName();
         User executor = dto.getExecutorId() == null ? null : userRepository.findById(dto.getExecutorId())
                 .orElseThrow(() -> new ResourceNotExistException(ExceptionMessage.EXECUTOR_NOT_EXIST));
@@ -98,9 +94,6 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.RESOURCE_NOT_FOUND));
         String trimmedName = Utils.trimmedText(dto.getName());
         dto.setName(trimmedName);
-        if (taskRepository.existsByNameAndIdNot(dto.getName(), id)) {
-            throw new ResourceExistException(ExceptionMessage.TASK_EXIST_BY_NAME);
-        }
         User executor = dto.getExecutorId() == null ? null : userRepository.findById(dto.getExecutorId())
                 .orElseThrow(() -> new ResourceNotExistException(ExceptionMessage.EXECUTOR_NOT_EXIST));
         TaskStatus status = taskStatusRepository.findById(dto.getTaskStatusId())
@@ -134,7 +127,7 @@ public class TaskServiceImpl implements TaskService {
             Set<Long> diffIds = requestLabelIds.stream()
                     .filter(id -> !foundLabelIds.contains(id))
                     .collect(Collectors.toSet());
-            throw new ResourceNotExistException(ExceptionMessage.LABELS_EXIST_BY_ID + ": " + diffIds);
+            throw new ResourceNotExistException(ExceptionMessage.LABELS_NOT_EXIST_BY_ID + ": " + diffIds);
         }
         return foundLabels;
     }

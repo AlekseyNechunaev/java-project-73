@@ -7,7 +7,7 @@ spring:
       maximum-pool-size: 30
 logging:
   level:
-    root: debug
+    root: info
 jwt:
   issuer: ${JWT_ISSUER}
   expireMinutes: ${JWT_EXPIRE_MINUTES}

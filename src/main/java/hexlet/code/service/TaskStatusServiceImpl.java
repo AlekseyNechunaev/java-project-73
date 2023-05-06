@@ -6,13 +6,10 @@ import hexlet.code.dto.CreateStatusDto;
 import hexlet.code.dto.GetStatusDto;
 import hexlet.code.entity.TaskStatus;
 import hexlet.code.exception.ExceptionMessage;
-import hexlet.code.exception.IllegalOperationException;
-import hexlet.code.exception.ResourceExistException;
 import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.repository.TaskStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,9 +45,6 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     public GetStatusDto create(CreateStatusDto dto) {
         String trimmedName = Utils.trimmedText(dto.getName());
         dto.setName(trimmedName);
-        if (taskStatusRepository.existsByNameIgnoreCase(dto.getName())) {
-            throw new ResourceExistException(ExceptionMessage.STATUS_EXIST_BY_NAME);
-        }
         TaskStatus status = mapper.map(dto);
         taskStatusRepository.save(status);
         return mapper.map(status);
@@ -62,9 +56,6 @@ public class TaskStatusServiceImpl implements TaskStatusService {
         dto.setName(trimmedName);
         TaskStatus status = taskStatusRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.RESOURCE_NOT_FOUND));
-        if (taskStatusRepository.existsByNameIgnoreCaseAndIdIsNot(dto.getName(), id)) {
-            throw new ResourceExistException(ExceptionMessage.STATUS_EXIST_BY_NAME);
-        }
         status.setName(dto.getName());
         taskStatusRepository.save(status);
         return mapper.map(status);
@@ -74,9 +65,6 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     public void delete(Long id) {
         TaskStatus status = taskStatusRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessage.RESOURCE_NOT_FOUND));
-        if (!CollectionUtils.isEmpty(status.getTasks())) {
-            throw new IllegalOperationException(ExceptionMessage.ILLEGAL_DELETE_STATUS);
-        }
         taskStatusRepository.delete(status);
     }
 
