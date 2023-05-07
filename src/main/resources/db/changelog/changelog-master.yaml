@@ -1,6 +1,6 @@
 databaseChangeLog:
 - changeSet:
-    id: 1680275537189-1
+    id: 1683440189998-1
     author: alekseynechunaev (generated)
     changes:
     - createTable:
@@ -10,27 +10,18 @@ databaseChangeLog:
             constraints:
               nullable: false
               primaryKey: true
-              primaryKeyName: usersPK
+              primaryKeyName: labelsPK
             name: id
             type: BIGINT
         - column:
             name: created_at
-            type: date
+            type: TIMESTAMP
         - column:
-            name: email
+            name: name
             type: VARCHAR(255)
-        - column:
-            name: first_name
-            type: VARCHAR(255)
-        - column:
-            name: last_name
-            type: VARCHAR(255)
-        - column:
-            name: password
-            type: VARCHAR(255)
-        tableName: users
+        tableName: labels
 - changeSet:
-    id: 1680862186778-1
+    id: 1683440189998-2
     author: alekseynechunaev (generated)
     changes:
     - createTable:
@@ -50,9 +41,8 @@ databaseChangeLog:
             name: name
             type: VARCHAR(255)
         tableName: statuses
-
 - changeSet:
-    id: 1681143090782-1
+    id: 1683440189998-3
     author: alekseynechunaev (generated)
     changes:
     - createTable:
@@ -89,68 +79,7 @@ databaseChangeLog:
             type: BIGINT
         tableName: tasks
 - changeSet:
-    id: 1681143090782-2
-    author: alekseynechunaev (generated)
-    changes:
-    - addForeignKeyConstraint:
-        baseColumnNames: executor_id
-        baseTableName: tasks
-        constraintName: FKbrg922bkqn5m7212jsqjg6ioe
-        deferrable: false
-        initiallyDeferred: false
-        referencedColumnNames: id
-        referencedTableName: users
-        validate: true
-- changeSet:
-    id: 1681143090782-3
-    author: alekseynechunaev (generated)
-    changes:
-    - addForeignKeyConstraint:
-        baseColumnNames: author_id
-        baseTableName: tasks
-        constraintName: FKhods8r8oyyx7tuj3c91ki2sk1
-        deferrable: false
-        initiallyDeferred: false
-        referencedColumnNames: id
-        referencedTableName: users
-        validate: true
-- changeSet:
-    id: 1681143090782-4
-    author: alekseynechunaev (generated)
-    changes:
-    - addForeignKeyConstraint:
-        baseColumnNames: status_id
-        baseTableName: tasks
-        constraintName: FKhp48vnj340wm1stg2kux5dqcx
-        deferrable: false
-        initiallyDeferred: false
-        referencedColumnNames: id
-        referencedTableName: statuses
-        validate: true
-
-- changeSet:
-    id: 1681460662498-1
-    author: alekseynechunaev (generated)
-    changes:
-    - createTable:
-        columns:
-        - column:
-            autoIncrement: true
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: labelsPK
-            name: id
-            type: BIGINT
-        - column:
-            name: created_at
-            type: TIMESTAMP
-        - column:
-            name: name
-            type: VARCHAR(255)
-        tableName: labels
-- changeSet:
-    id: 1681460662498-2
+    id: 1683440189998-4
     author: alekseynechunaev (generated)
     changes:
     - createTable:
@@ -167,7 +96,69 @@ databaseChangeLog:
             type: BIGINT
         tableName: tasks_labels
 - changeSet:
-    id: 1681460662498-3
+    id: 1683440189998-5
+    author: alekseynechunaev (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: usersPK
+            name: id
+            type: BIGINT
+        - column:
+            name: created_at
+            type: TIMESTAMP
+        - column:
+            name: email
+            type: VARCHAR(255)
+        - column:
+            name: first_name
+            type: VARCHAR(255)
+        - column:
+            name: last_name
+            type: VARCHAR(255)
+        - column:
+            name: password
+            type: VARCHAR(255)
+        tableName: users
+- changeSet:
+    id: 1683440189998-6
+    author: alekseynechunaev (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: name
+        constraintName: UC_LABELSNAME_COL
+        tableName: labels
+- changeSet:
+    id: 1683440189998-7
+    author: alekseynechunaev (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: name
+        constraintName: UC_STATUSESNAME_COL
+        tableName: statuses
+- changeSet:
+    id: 1683440189998-8
+    author: alekseynechunaev (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: name
+        constraintName: UC_TASKSNAME_COL
+        tableName: tasks
+- changeSet:
+    id: 1683440189998-9
+    author: alekseynechunaev (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: email
+        constraintName: UC_USERSEMAIL_COL
+        tableName: users
+- changeSet:
+    id: 1683440189998-10
     author: alekseynechunaev (generated)
     changes:
     - addForeignKeyConstraint:
@@ -180,7 +171,46 @@ databaseChangeLog:
         referencedTableName: labels
         validate: true
 - changeSet:
-    id: 1681460662498-4
+    id: 1683440189998-11
+    author: alekseynechunaev (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: executor_id
+        baseTableName: tasks
+        constraintName: FKbrg922bkqn5m7212jsqjg6ioe
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+- changeSet:
+    id: 1683440189998-12
+    author: alekseynechunaev (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: author_id
+        baseTableName: tasks
+        constraintName: FKhods8r8oyyx7tuj3c91ki2sk1
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+- changeSet:
+    id: 1683440189998-13
+    author: alekseynechunaev (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: status_id
+        baseTableName: tasks
+        constraintName: FKhp48vnj340wm1stg2kux5dqcx
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: statuses
+        validate: true
+- changeSet:
+    id: 1683440189998-14
     author: alekseynechunaev (generated)
     changes:
     - addForeignKeyConstraint:
